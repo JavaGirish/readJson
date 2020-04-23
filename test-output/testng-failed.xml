@@ -5,8 +5,9 @@
     <classes>
       <class name="com.tests.AmazonTest">
         <methods>
-          <include name="setUp"/>
-          <include name="searchProduct"/>
+          <include name="setup"/>
+          <include name="tearDown"/>
+          <include name="test1"/>
         </methods>
       </class> <!-- com.tests.AmazonTest -->
     </classes>
