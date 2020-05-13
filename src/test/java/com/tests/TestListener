@@ -1,0 +1,129 @@
+package com.listeners;
+
+import java.io.File;
+
+import javax.sql.rowset.FilteredRowSet;
+
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.io.FileHandler;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+
+import com.tests.AmazonTest;
+
+public class TestListener2 extends AmazonTest implements ITestListener {
+
+	private static String fileSeperator = "\\";
+	public static String path = System.getProperty("user.dir") + "\\src\\test\\resources\\com\\data\\screenshots";
+
+	public void onTestFailure(ITestResult result) {
+		System.out.println("***** Error " + result.getName() + " test has failed *****");
+
+		ITestContext context = result.getTestContext();
+		
+
+		String testClassName = getTestClassName(result.getInstanceName()).trim();
+
+		String testMethodName = result.getName().toString().trim();
+
+		String screenShotName = testMethodName + ".png";
+
+		System.out.println(path + fileSeperator + "Results" + fileSeperator + testClassName + fileSeperator);
+		System.out.println(screenShotName);
+		System.out.println(testMethodName);
+		System.out.println(takeScreenShot(driver, screenShotName, testClassName));
+
+		String imagePath = path + fileSeperator + "Results" + fileSeperator + testClassName + fileSeperator
+				+ takeScreenShot(driver, screenShotName, testClassName);
+
+		System.out.println("Screenshot can be found : " + imagePath);
+
+	}
+
+	public static String takeScreenShot(WebDriver driver, String screenShotName, String testName) {
+		try {
+
+			File file = new File(path + fileSeperator + "Results");
+
+			if (!file.exists()) {
+				System.out.println("File created " + file);
+				file.mkdir();
+
+			}
+
+			File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			File targetFile = new File(file + fileSeperator + testName, screenShotName);
+
+			FileUtils.copyFile(screenshotFile, targetFile);
+
+			return screenShotName;
+		}
+
+		catch (Exception e) {
+			System.out.println("An exception occured while taking screenshot " + e.getCause());
+			return null;
+		}
+	}
+
+	public String getTestClassName(String testName) {
+		String[] reqTestClassname = testName.split("\\.");
+
+		int i = reqTestClassname.length - 2;
+		System.out.println("Required Test Name : " + reqTestClassname[i]);
+		return reqTestClassname[i];
+	}
+
+	@Override
+	public void onTestStart(ITestResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onTestSuccess(ITestResult result) {
+		ITestContext context = result.getTestContext();
+		driver = (WebDriver) context.getAttribute("driver");
+
+		String testClassName = getTestClassName(result.getInstanceName()).trim();
+
+		String testMethodName = result.getName().toString().trim();
+		String screenShotName = testMethodName + ".png";
+
+		if (driver != null) {
+			String imagePath = ".." + fileSeperator + "Screenshots" + fileSeperator + "Results" + fileSeperator
+					+ testClassName + fileSeperator + takeScreenShot(driver, screenShotName, testClassName);
+
+			System.out.println("Screenshot can be found : " + imagePath);
+		}
+
+	}
+
+	@Override
+	public void onTestSkipped(ITestResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStart(ITestContext context) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onFinish(ITestContext context) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
